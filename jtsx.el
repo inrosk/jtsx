@@ -1308,8 +1308,9 @@ MODE, MODE-MAP, TS-LANG-KEY, INDENT-VAR-NAME variables allow customization
   (jtsx-customize-indent-rules ts-lang-key indent-var-name)
 
   ;; Use maximum level of syntax highlighting if enabled
-  (when jtsx-enable-all-syntax-highlighting-features
-    (setq-local treesit-font-lock-level 4))
+  (if jtsx-enable-all-syntax-highlighting-features
+      (setq-local treesit-font-lock-level 4)
+    (setq-local treesit-font-lock-level 1))
 
   ;; Apply treesit customization
   (treesit-major-mode-setup)
@@ -1841,8 +1842,9 @@ TS-LANG-KEY is the treesit language key."
       (jtsx-typescript-tsx-configure-mode-common ts-lang-key)
       (jtsx-customize-indent-rules ts-lang-key
                                    'typescript-ts-mode-indent-offset)
-      (when jtsx-enable-all-syntax-highlighting-features
-        (setq-local treesit-font-lock-level 4))
+      (if jtsx-enable-all-syntax-highlighting-features
+          (setq-local treesit-font-lock-level 4)
+        (setq-local treesit-font-lock-level 1))
       (treesit-major-mode-setup))))
 
 ;; typescript-ts-mode package sets auto-mode-alist when loaded
