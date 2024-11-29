@@ -1337,8 +1337,9 @@ If IGNORE-SWITCH-RULE is t, switch_body rule is let as is."
   (jtsx-customize-indent-rules ts-lang-key indent-var-name ignore-switch-rule)
 
   ;; Use maximum level of syntax highlighting if enabled
-  (when jtsx-enable-all-syntax-highlighting-features
-    (setq-local treesit-font-lock-level 4))
+  (if jtsx-enable-all-syntax-highlighting-features
+      (setq-local treesit-font-lock-level 4)
+    (setq-local treesit-font-lock-level 1))
 
   ;; Apply treesit customization
   (treesit-major-mode-setup)
@@ -1883,8 +1884,9 @@ TS-LANG-KEY is the treesit language key."
       (jtsx-typescript-tsx-configure-mode-common ts-lang-key)
       (jtsx-customize-indent-rules ts-lang-key
                                    'typescript-ts-mode-indent-offset)
-      (when jtsx-enable-all-syntax-highlighting-features
-        (setq-local treesit-font-lock-level 4))
+      (if jtsx-enable-all-syntax-highlighting-features
+          (setq-local treesit-font-lock-level 4)
+        (setq-local treesit-font-lock-level 1))
       (treesit-major-mode-setup))))
 
 ;; typescript-ts-mode package sets auto-mode-alist when loaded
