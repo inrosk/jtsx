@@ -59,7 +59,7 @@
   (defun jtsx-treesit-ready-p (orig-func &rest args)
     "Advice ORIG-FUNC to make it quiet.
 First element of ARGS and t are the new arguments."
-  (apply orig-func (list (car args) t)))
+    (apply orig-func (list (car args) t)))
 
   (advice-add 'treesit-ready-p :around #'jtsx-treesit-ready-p)
   (require 'typescript-ts-mode)
@@ -206,11 +206,11 @@ If the research failed and FALLBACK-TYPES are not nil retry with FALLBACK-TYPES.
 If INCLUDE-NODE is not nil, NODE is included in the research.
 If JSX-EXP-GUARD is not nil, do not traverse jsx expression."
   (let* ((get-parent-node (lambda (current-node)
-                           (let ((parent-node (treesit-node-parent current-node)))
-                             (if (and jsx-exp-guard
-                                      (jtsx-traversing-jsx-expression-p parent-node node))
-                                 nil
-                               parent-node))))
+                            (let ((parent-node (treesit-node-parent current-node)))
+                              (if (and jsx-exp-guard
+                                       (jtsx-traversing-jsx-expression-p parent-node node))
+                                  nil
+                                parent-node))))
          (enclosing-node (if include-node node (funcall get-parent-node node))))
     (while (and enclosing-node (not (member (treesit-node-type enclosing-node) types)))
       (setq enclosing-node (funcall get-parent-node enclosing-node)))
@@ -287,7 +287,7 @@ in JSX context means we are in nested JS in JSX context.  It enables to cover
 that kind of case:
 <A>{[1, 2, 3].map((val)=>{ return <B attr={val} />})}</A>."
   (or (jtsx-js-nested-in-jsx-context-at-p pos1)
-       (and pos2 (jtsx-js-nested-in-jsx-context-at-p pos2))))
+      (and pos2 (jtsx-js-nested-in-jsx-context-at-p pos2))))
 
 (defun jtsx-js-nested-in-jsx-context-p ()
   "Check if inside JS nested in JSX context at point or at region ends."
@@ -306,8 +306,8 @@ that kind of case:
 (defmacro jtsx-with-jsx-attribute-comment-style (&rest body)
   "Execute BODY with jsx attribute comment style."
   (declare (debug t) (indent 0))
-  `(let ((comment-start "/* ")
-         (comment-end " */")
+  `(let ((comment-start "// ")
+         (comment-end " ")
          (comment-use-syntax nil)
          (comment-start-skip "\\(?:/\\*+\\)\\s-*")
          (comment-end-skip "\\s-*\\(\\*+/\\)"))
@@ -317,8 +317,8 @@ that kind of case:
   "Execute BODY with jsx attribute comment style."
   (declare (debug t) (indent 0))
   `(let ((comment-use-syntax nil)
-        (comment-start-skip "\\(?://+\\|{?/\\*+\\)\\s-*")
-        (comment-end-skip "\\s-*\\(\\s>\\|\\*+/}?\\)"))
+         (comment-start-skip "\\(?://+\\|{?/\\*+\\)\\s-*")
+         (comment-end-skip "\\s-*\\(\\s>\\|\\*+/}?\\)"))
      ,@body))
 
 (defun jtsx-comment-jsx-dwim (arg)
@@ -385,7 +385,7 @@ See `comment-dwim' documentation for ARG usage."
   "Comment or uncomment the whole JSX line at point.
 See `comment-line' documentation for N usage."
   (jtsx-with-jsx-comment-style
-    (comment-line n)))
+   (comment-line n)))
 
 (defun jtsx-comment-jsx-attribute-line (n)
   "Comment or uncomment the whole JSX attribute line at point.
@@ -397,7 +397,7 @@ See `comment-line' documentation for N usage."
   "Comment or uncomment the whole JS nested in JSX line at point.
 See `comment-line' documentation for N usage."
   (jtsx-with-js-nested-in-jsx-comment-style
-    (comment-line n)))
+   (comment-line n)))
 
 (defun jtsx-comment-line (n)
   "Add support for commenting/uncommenting a line inside JSX.
@@ -407,11 +407,11 @@ See `comment-line' documentation for N usage."
   (let* ((pos1 (line-beginning-position))
          (pos2 (line-end-position n))
          (comment-context (jtsx-comment-context-type pos1 pos2)))
-      (pcase comment-context
-       ('jsx-attribute (jtsx-comment-jsx-attribute-line n))
-       ('js-nested-in-jsx (jtsx-comment-js-nested-in-jsx-line n))
-       ('jsx (jtsx-comment-jsx-line n))
-       (_ (comment-line n)))))
+    (pcase comment-context
+      ('jsx-attribute (jtsx-comment-jsx-attribute-line n))
+      ('js-nested-in-jsx (jtsx-comment-js-nested-in-jsx-line n))
+      ('jsx (jtsx-comment-jsx-line n))
+      (_ (comment-line n)))))
 
 (defun jtsx-jump-jsx-opening-tag ()
   "Jump to the opening tag of the JSX element."
@@ -495,7 +495,7 @@ CHILD-FIELD-NAME identify the tag to rename (`open_tag' or `close_tag')."
                        (and (equal current-tag-node-type "jsx_opening_element")
                             (equal child-field-name "open_tag"))
                        (and (equal current-tag-node-type "jsx_closing_element")
-                           (equal child-field-name "close_tag"))))
+                            (equal child-field-name "close_tag"))))
          (element-node (jtsx-enclosing-jsx-element node)))
     (cl-assert element-node nil "Unable to retrieve the enclosing jsx_element node")
     (let* ((tag-node (treesit-node-child-by-field-name element-node child-field-name))
@@ -542,7 +542,7 @@ Point can be in the opening or closing."
                          (eq (treesit-node-start child-node)  (treesit-node-end child-node)))
                     (jtsx-treesit-syntax-error-in-descendants-p child-node))
             (throw 'syntax-error-found t))
-        (setq index (1+ index)))))))
+          (setq index (1+ index)))))))
 
 (defun jtsx-treesit-syntax-error-in-ancestors-p (node)
   "Check recursively if there are errors reported by treesit in NODE ancestors."
@@ -550,11 +550,11 @@ Point can be in the opening or closing."
 
 (defun jtsx-jsx-element-tag-name (node)
   "Return the NODE tag name."
-    (if-let (identifier-node (treesit-node-child-by-field-name node "name"))
+  (if-let (identifier-node (treesit-node-child-by-field-name node "name"))
       (buffer-substring-no-properties
        (treesit-node-start identifier-node)
        (treesit-node-end identifier-node))
-      ""))
+    ""))
 
 (defun jtsx-empty-opening-tag-name-p (opening-tag-node)
   "Return whether the OPENING-TAG-NODE has an empty tag name or not."
@@ -744,18 +744,18 @@ used if FULL-ELEMENT-MOVE is t."
                  ;; New position is inline if surrounded by content on its own line
                  (inline-new-pos (and (not (jtsx-bolc-at-p new-pos)) (not (jtsx-eol-at-p new-pos))))
                  (delete-region-start (if inline-node
-                                        node-start
-                                      ;; Extend region to include whitespaces and newlines
-                                      (save-excursion (goto-char node-start)
-                                                      (if backward
-                                                          (pos-bol)
-                                                        (forward-line -1) (pos-eol)))))
+                                          node-start
+                                        ;; Extend region to include whitespaces and newlines
+                                        (save-excursion (goto-char node-start)
+                                                        (if backward
+                                                            (pos-bol)
+                                                          (forward-line -1) (pos-eol)))))
                  (delete-region-end (if inline-node
-                                      node-end
-                                    ;; Extend region to include whitespaces and newlines
-                                    (save-excursion (goto-char node-end)
-                                                    (when backward (forward-line 1))
-                                                    (point))))
+                                        node-end
+                                      ;; Extend region to include whitespaces and newlines
+                                      (save-excursion (goto-char node-end)
+                                                      (when backward (forward-line 1))
+                                                      (point))))
                  ;; Copy and delete region are usefull when we want to delete whitespaces and
                  ;; newlines but we do not want to paste them (eg inline new position)
                  (copy-region-start (if inline-new-pos node-start delete-region-start))
@@ -970,11 +970,11 @@ ELEMENT-NAME is the name of the new wrapping element."
                                                             (forward-line 1)
                                                             (point))))
                    (wrapped-region-size (- final-closing-start-pos final-opening-end-pos)))
-            (delete-region final-closing-start-pos final-closing-end-pos)
-            (delete-region final-opening-start-pos final-opening-end-pos)
-            (indent-region final-opening-start-pos (+ final-opening-start-pos
-                                                      wrapped-region-size))
-            (goto-char (1+ opening-start-pos)))) ; +1 to ensure to be inside the children
+              (delete-region final-closing-start-pos final-closing-end-pos)
+              (delete-region final-opening-start-pos final-opening-end-pos)
+              (indent-region final-opening-start-pos (+ final-opening-start-pos
+                                                        wrapped-region-size))
+              (goto-char (1+ opening-start-pos)))) ; +1 to ensure to be inside the children
         (message "Not able to retrieve the wrapping node"))
     (message "Not inside jsx context")))
 
@@ -1035,8 +1035,8 @@ Returns either horizontal or vertical symbol."
              (sep-end (treesit-node-start next-child)))
         (cl-assert (and sep-start sep-end))
         (when (save-excursion
-              (goto-char sep-start)
-              (re-search-forward "\n" sep-end t))
+                (goto-char sep-start)
+                (re-search-forward "\n" sep-end t))
           (setq newline-count (1+ newline-count)))
         (setq index (1+ index))))
     (if (< separator-count (* newline-count 2))
@@ -1111,9 +1111,9 @@ of the new expected orientation is performed."
                                                         "jsx_attribute")))))
                 (pcase (or orientation (jtsx-guess-jsx-attributes-new-orientation element))
                   ('horizontal (jtsx-rearrange-jsx-attributes-core element
-                                                               " "
-                                                               (equal (treesit-node-type element)
-                                                                      "jsx_opening_element")))
+                                                                   " "
+                                                                   (equal (treesit-node-type element)
+                                                                          "jsx_opening_element")))
                   ('vertical (jtsx-rearrange-jsx-attributes-core element "\n"))
                   (_ (error "Unknown orientation")))
               (message "No attribute found")))
@@ -1362,8 +1362,8 @@ typescript/tsx grammar, `function' becomes `function_expression'."
              ;; New version of the grammar
              'function_expression)
     (treesit-query-error
-    ;; Old version of the grammar
-    'function)))
+     ;; Old version of the grammar
+     'function)))
 
 ;; Modified copy from lisp/progmodes/js.el of Emacs sources.
 ;; Hard code javascript font lock settings to back port some fixes into Emacs 29.1 and 29.2.
