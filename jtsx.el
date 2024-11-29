@@ -1686,7 +1686,7 @@ WHEN indicates when the mode starts to be obsolete."
        'js-indent-level))))
 
 ;; Keep old jsx-mode for backward compatibility but mark it as obsolete.
-(jtsx-define-obsolete-mode-alias 'jsx-mode 'jtsx-jsx-mode "jtsx 0.2.1")
+;; (jtsx-define-obsolete-mode-alias 'jsx-mode 'jtsx-jsx-mode "jtsx 0.2.1")
 
 (defun jtsx-add-support-for-switch-indent-option (ts-lang-key)
   "Add support for switch/case indentation option for TS-LANG-KEY language."
@@ -1723,7 +1723,7 @@ TS-LANG-KEY is the treesit language key."
        'typescript-ts-mode-indent-offset))))
 
 ;; Keep old tsx-mode for backward compatibility but mark it as obsolete.
-(jtsx-define-obsolete-mode-alias 'tsx-mode 'jtsx-tsx-mode "jtsx 0.2.1")
+;; (jtsx-define-obsolete-mode-alias 'tsx-mode 'jtsx-tsx-mode "jtsx 0.2.1")
 
 ;; typescript-ts-mode package sets auto-mode-alist when loaded
 (jtsx-prioritize-mode-if-present 'jtsx-tsx-mode)
