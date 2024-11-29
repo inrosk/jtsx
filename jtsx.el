@@ -293,8 +293,8 @@ See `comment-dwim' documentation for ARG usage."
 (defun jtsx-comment-jsx-attribute-dwim (arg)
   "Comment or uncomment JSX element attribute at point or in region.
 See `comment-dwim' documentation for ARG usage."
-  (let ((comment-start "/* ")
-        (comment-end " */")
+  (let ((comment-start "// ")
+        (comment-end " ")
         (comment-use-syntax nil)
         (comment-start-skip "\\(?:/\\*+\\)\\s-*")
         (comment-end-skip "\\s-*\\(\\*+/\\)"))
