@@ -1316,6 +1316,7 @@ MODE, MODE-MAP, TS-LANG-KEY, INDENT-VAR-NAME variables allow customization
 
   ;; Bind keys
   (define-key mode-map [remap comment-dwim] 'jtsx-comment-dwim)
+  (define-key mode-map [remap comment-line] 'jtsx-comment-line)
   (define-key mode-map ">" #'jtsx-jsx-electric-closing-element)
 
   ;; Add hook for electric new line
