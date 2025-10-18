@@ -2,14 +2,14 @@
 
 # Changelog
 
-## Master
+## 0.7.0 (2025-10-18)
 
 * Apply JSX comment logic to `comment-line` function.
 
 ## 0.6.0 (2025-03-08)
 
 * Add jsdoc language to jtsx-install-treesit-language function.
-* Add delete jsx attribute feature. 
+* Add delete jsx attribute feature.
 
 ## 0.5.1 (2024-07-15)
 
