@@ -2,6 +2,10 @@
 
 # Changelog
 
+## Master
+
+* Fixes regarding some Emacs 31 breaking changes
+
 ## 0.7.0 (2025-10-18)
 
 * Apply JSX comment logic to `comment-line` function.

@@ -6,7 +6,7 @@
 ;; Maintainer: Loïc Lemaître <loic.lemaitre@gmail.com>
 ;; URL: https://github.com/llemaitre19/jtsx
 ;; Package-Requires: ((emacs "29.1"))
-;; Version: 0.7.0
+;; Version: 0.7.1pre1
 ;; Keywords: languages
 
 ;; This file is NOT part of GNU Emacs.
@@ -235,7 +235,7 @@ If JSX-EXP-GUARD is not nil, do not traverse jsx expression."
 (defun jtsx-jsx-context-at-p (position &optional jsx-exp-guard)
   "Check if inside JSX context at POSITION.
 If JSX-EXP-GUARD is not nil, do not traverse jsx expression."
-  (when-let ((node (jtsx-treesit-node-at position)))
+  (when-let* ((node (jtsx-treesit-node-at position)))
     (jtsx-enclosing-jsx-node node jtsx-jsx-ts-keys nil t jsx-exp-guard)))
 
 (defun jtsx-jsx-context-at-or-between-p (pos1 &optional pos2 jsx-exp-guard)
@@ -251,7 +251,7 @@ If JSX-EXP-GUARD is not nil, do not traverse jsx expression."
 
 (defun jtsx-jsx-attribute-context-at-p (position)
   "Check if inside a JSX element attribute at POSITION."
-  (when-let ((node (jtsx-treesit-node-at position)))
+  (when-let* ((node (jtsx-treesit-node-at position)))
     (when (jtsx-enclosing-jsx-node node '("jsx_attribute") nil nil t)
       t)))
 
@@ -550,7 +550,7 @@ Point can be in the opening or closing."
 
 (defun jtsx-jsx-element-tag-name (node)
   "Return the NODE tag name."
-    (if-let (identifier-node (treesit-node-child-by-field-name node "name"))
+  (if-let* ((identifier-node (treesit-node-child-by-field-name node "name")))
       (buffer-substring-no-properties
        (treesit-node-start identifier-node)
        (treesit-node-end identifier-node))
@@ -674,7 +674,7 @@ Return a plist containing the move information : `:node-start', `:node-end',
                              (jtsx-first-child-jsx-element enclosing-node backward)
                            ;; We are looking at NODE siblings.
                            (jtsx-first-sibling-jsx-element enclosing-node backward))))
-    (when-let ((node-final-candidate
+    (when-let* ((node-final-candidate
                 ;; Manage step in and step out
                 (cond
                  ;; No step in or out
@@ -734,7 +734,7 @@ If BACKWARD is not nil, search for valid move before point, else after point.
 If ALLOW-STEP-IN is not nil, a move can go deeper in the JSX hierarchy.  Only
 used if FULL-ELEMENT-MOVE is t."
   (if (jtsx-jsx-context-p)
-      (if-let ((res (jtsx-find-jsx-element-valid-move full-element-move backward
+      (if-let* ((res (jtsx-find-jsx-element-valid-move full-element-move backward
                                                       allow-step-in)))
           (let* ((node-start (plist-get res :node-start))
                  (node-end (plist-get res :node-end))
@@ -815,8 +815,8 @@ N is a numeric prefix argument.  If greater than 1, insert N times `>', but
   (insert-char (char-from-name "GREATER-THAN SIGN") n t)
   ;; Check jsx context inside the tag
   (when (and (= n 1) jtsx-enable-jsx-electric-closing-element (jtsx-jsx-context-at-p (1- (point))))
-    (when-let ((node (jtsx-treesit-node-at (1- (point))))) ; Safer to get node inside the tag
-      (when-let ((parent-node (treesit-node-parent node)))
+    (when-let* ((node (jtsx-treesit-node-at (1- (point))))) ; Safer to get node inside the tag
+      (when-let* ((parent-node (treesit-node-parent node)))
         (when (and (equal (treesit-node-type node) ">")
                    (equal (treesit-node-type parent-node) "jsx_opening_element"))
           (let* ((identifier-node (treesit-node-child-by-field-name parent-node "name"))
@@ -944,7 +944,7 @@ ELEMENT-NAME is the name of the new wrapping element."
   "Unwrap JSX nodes wrapped in the node at point."
   (interactive)
   (if (jtsx-jsx-context-p)
-      (if-let ((node (jtsx-enclosing-jsx-element-at-point t)))
+      (if-let* ((node (jtsx-enclosing-jsx-element-at-point t)))
           (let* ((opening-tag (treesit-node-child-by-field-name node "open_tag"))
                  (closing-tag (treesit-node-child-by-field-name node "close_tag"))
                  (opening-start-pos (treesit-node-start opening-tag))
@@ -982,7 +982,7 @@ ELEMENT-NAME is the name of the new wrapping element."
   "Delete a JSX node at point and its children."
   (interactive)
   (if (jtsx-jsx-context-p)
-      (if-let ((node (jtsx-enclosing-jsx-node (jtsx-treesit-node-at (point))
+      (if-let* ((node (jtsx-enclosing-jsx-node (jtsx-treesit-node-at (point))
                                               jtsx-jsx-ts-root-keys
                                               nil
                                               t)))
@@ -998,7 +998,7 @@ ELEMENT-NAME is the name of the new wrapping element."
   "Delete a JSX attribute at point."
   (interactive)
   (if (jtsx-jsx-context-p)
-      (if-let ((node (jtsx-enclosing-jsx-node (jtsx-treesit-node-at (point))
+      (if-let* ((node (jtsx-enclosing-jsx-node (jtsx-treesit-node-at (point))
                                               '("jsx_attribute")
                                               nil
                                               t)))
@@ -1105,7 +1105,7 @@ of the new expected orientation is performed."
                              (treesit-node-child-by-field-name root-element "open_tag")
                            root-element)))
             (cl-assert element nil "Not able to retieve the opening tag")
-            (if-let ((attributes (treesit-filter-child
+            (if-let* ((attributes (treesit-filter-child
                                   element
                                   (lambda (node) (equal (treesit-node-type node)
                                                         "jsx_attribute")))))
@@ -1260,6 +1260,10 @@ NO-SYNTAX-CROSSING, Please see `backward-up-list'."
   "Extract indent rules for TS-LANG-KEY language from `jtsx-ts-indent-rules'."
   `(cdr (assoc ,ts-lang-key jtsx-ts-indent-rules)))
 
+(defun jtsx-ts-find-indent-rule (ts-lang-key rule)
+  "Find RULE for TS-LANG-KEY in `jtsx-ts-indent-rules'."
+  (member rule (jtsx-ts-indent-rules-for-key ts-lang-key)))
+
 (defun jtsx-ts-add-indent-rule (ts-lang-key rule &optional add-first)
   "Add an indent RULE for TS-LANG-KEY language into `jtsx-ts-indent-rules'.
 If ADD-FIRST is not nil, preprend the RULE in the list for priority purpose."
@@ -1275,37 +1279,62 @@ If ADD-FIRST is not nil, preprend the RULE in the list for priority purpose."
          (new-rules (remove rule original-rules)))
     (setf (jtsx-ts-indent-rules-for-key ts-lang-key) new-rules)))
 
-(defun jtsx-customize-indent-rules (ts-lang-key indent-var-name)
+
+(defun jtsx-customize-indent-rules (ts-lang-key indent-var-name &optional ignore-switch-rule)
   "Customize treesit indent rules for TS-LANG-KEY language.
-INDENT-VAR-NAME is the name of the indent offset variable."
-  (jtsx-ts-add-indent-rule ts-lang-key
-                           `((parent-is "switch_body") parent-bol ,jtsx-switch-indent-offset))
-  (when jtsx-indent-statement-block-regarding-standalone-parent
-    (jtsx-ts-add-indent-rule ts-lang-key '((node-is "}") standalone-parent 0) t)
-    (jtsx-ts-remove-indent-rule ts-lang-key '((node-is "}") parent-bol 0))
+INDENT-VAR-NAME is the name of the indent offset variable.
+If IGNORE-SWITCH-RULE is t, switch_body rule is let as is."
+  (unless ignore-switch-rule
     (jtsx-ts-add-indent-rule ts-lang-key
-                             `((parent-is "statement_block") standalone-parent ,indent-var-name))
-    (jtsx-ts-remove-indent-rule ts-lang-key
-                                `((parent-is "statement_block") parent-bol ,indent-var-name))
-    (jtsx-ts-add-indent-rule ts-lang-key
-                             `((node-is "statement_block") standalone-parent ,indent-var-name))
-    (jtsx-ts-remove-indent-rule ts-lang-key
-                                `((node-is "statement_block") parent-bol ,indent-var-name))
-    (jtsx-ts-add-indent-rule ts-lang-key
-                             `((node-is "statement_block") standalone-parent ,indent-var-name))
-    (jtsx-ts-remove-indent-rule ts-lang-key
-                                `((node-is "statement_block") parent-bol ,indent-var-name)))
+                             `((parent-is "switch_body") parent-bol ,jtsx-switch-indent-offset)))
+  (let ((close-bracket-new-rule '((node-is "}") standalone-parent 0))
+        (close-bracket-orig-rule '((node-is "}") parent-bol 0))
+        (statement-new-rule-1 `((parent-is "statement_block") standalone-parent ,indent-var-name))
+        (statement-orig-rule-1 `((parent-is "statement_block") parent-bol ,indent-var-name))
+        (statement-new-rule-2 `((node-is "statement_block") standalone-parent ,indent-var-name))
+        (statement-orig-rule-2 `((node-is "statement_block") parent-bol ,indent-var-name)))
+
+    (if jtsx-indent-statement-block-regarding-standalone-parent
+        (progn
+          ;; } rule
+          (when (not (jtsx-ts-find-indent-rule ts-lang-key close-bracket-new-rule))
+            (jtsx-ts-add-indent-rule ts-lang-key close-bracket-new-rule t)
+            (jtsx-ts-remove-indent-rule ts-lang-key close-bracket-orig-rule))
+          ;; statement_block rule 1
+          (when (not (jtsx-ts-find-indent-rule ts-lang-key statement-new-rule-1))
+            (jtsx-ts-add-indent-rule ts-lang-key statement-new-rule-1)
+            (jtsx-ts-remove-indent-rule ts-lang-key statement-orig-rule-1))
+          ;; statement_block rule 2
+          (when (not (jtsx-ts-find-indent-rule ts-lang-key statement-new-rule-2))
+            (jtsx-ts-add-indent-rule ts-lang-key statement-new-rule-2)
+            (jtsx-ts-remove-indent-rule ts-lang-key statement-orig-rule-2)))
+      ;; Mainly for backward compatibility
+      (progn
+        ;; } rule
+        (when (not (jtsx-ts-find-indent-rule ts-lang-key close-bracket-orig-rule))
+          (jtsx-ts-add-indent-rule ts-lang-key close-bracket-orig-rule t)
+          (jtsx-ts-remove-indent-rule ts-lang-key close-bracket-new-rule))
+        ;; statement_block rule 1
+        (when (not (jtsx-ts-find-indent-rule ts-lang-key statement-orig-rule-1))
+          (jtsx-ts-add-indent-rule ts-lang-key statement-orig-rule-1)
+          (jtsx-ts-remove-indent-rule ts-lang-key statement-new-rule-1))
+            ;; statement_block rule 2
+        (when (not (jtsx-ts-find-indent-rule ts-lang-key statement-orig-rule-2))
+          (jtsx-ts-add-indent-rule ts-lang-key statement-orig-rule-2)
+          (jtsx-ts-remove-indent-rule ts-lang-key statement-new-rule-2)))))
   (setq-local treesit-simple-indent-rules jtsx-ts-indent-rules))
 
 (defun jtsx-configure-mode-base (mode
                                  mode-map
                                  ts-lang-key
-                                 indent-var-name)
+                                 indent-var-name
+                                 &optional ignore-switch-rule)
   "Base function for JSX/TSX Major mode configuration.
 MODE, MODE-MAP, TS-LANG-KEY, INDENT-VAR-NAME variables allow customization
- depending on the mode."
+ depending on the mode.
+If IGNORE-SWITCH-RULE is t, switch_body rule is let as is."
   ;; Customize indentation
-  (jtsx-customize-indent-rules ts-lang-key indent-var-name)
+  (jtsx-customize-indent-rules ts-lang-key indent-var-name ignore-switch-rule)
 
   ;; Use maximum level of syntax highlighting if enabled
   (when jtsx-enable-all-syntax-highlighting-features
@@ -1334,6 +1363,11 @@ MODE, MODE-MAP, TS-LANG-KEY, INDENT-VAR-NAME variables allow customization
   ;; other `post-command-hook' that have a default `DEPTH' value. This seems to be the case for many
   ;; popular completion packages : `company-mode', `corfu', `vertico', `auto-complete'.
   (add-hook 'post-command-hook #'jtsx-synchronize-jsx-element-tags -1 t)
+
+  ;; Emcas 31 introduce 'comment-setup-function which conflicts with jtsx
+  ;; comment support
+  (when (boundp 'comment-setup-function)
+    (setq comment-setup-function #'ignore))
 
   ;; Use jtsx-forward-sexp
   (setq-local forward-sexp-function #'jtsx-forward-sexp)
@@ -1759,7 +1793,10 @@ WHEN indicates when the mode starts to be obsolete."
       ;; prevent side effects as we will modify it.
       (setq-local jtsx-ts-indent-rules
                   (jtsx-deep-copy-indent-rules
-                   'javascript js--treesit-indent-rules))
+                   'javascript
+                   (if (fboundp 'js--treesit-indent-rules)
+                       (js--treesit-indent-rules)
+                     js--treesit-indent-rules)))
 
       (jtsx-ts-remove-indent-rule
        ts-lang-key
@@ -1781,11 +1818,16 @@ WHEN indicates when the mode starts to be obsolete."
         (setq-local treesit-font-lock-settings
                     (jtsx-jsx-mode-font-lock-settings)))
 
+      ;; Starting Emacs 31 custom indent offset is supported in js-ts-mode
+      ;; else this has no effect
+      (setq-local js-switch-indent-offset jtsx-switch-indent-offset)
+
       (jtsx-configure-mode-base
        'jtsx-jsx-mode
        jtsx-jsx-mode-map
        ts-lang-key
-       'js-indent-level))))
+       'js-indent-level
+       (not (version< emacs-version "31.0"))))))
 
 ;; Keep old jsx-mode for backward compatibility but mark it as obsolete.
 (jtsx-define-obsolete-mode-alias 'jsx-mode 'jtsx-jsx-mode "jtsx 0.2.1")

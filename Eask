@@ -1,5 +1,5 @@
 (package "jtsx"
-         "0.7.0"
+         "0.7.1pre1"
          "Extends JSX/TSX built-in support")
 
 (website-url "https://github.com/llemaitre19/jtsx")
