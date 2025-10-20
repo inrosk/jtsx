@@ -12,7 +12,7 @@
 
 Summary of features:
 
-* Commenting/uncommenting JSX code
+* Commenting/uncommenting JSX code (including JSX attributes and JS nested in JSX)
 * Refactoring: moving, wrapping/unwrapping, deleting, renaming `JSX` elements, toggling the orientation of`JSX` attributes
 * Jumping between `JSX` opening and closing tags
 * Electric `JSX` closing tag and new line
@@ -100,7 +100,7 @@ Here an example of configuration using [use-package](https://github.com/jwiegley
     (define-key mode-map (kbd "C-c j t") 'jtsx-toggle-jsx-attributes-orientation)
     (define-key mode-map (kbd "C-c j h") 'jtsx-rearrange-jsx-attributes-horizontally)
     (define-key mode-map (kbd "C-c j v") 'jtsx-rearrange-jsx-attributes-vertically))
-    
+
   (defun jtsx-bind-keys-to-jtsx-jsx-mode-map ()
       (jtsx-bind-keys-to-mode-map jtsx-jsx-mode-map))
 
