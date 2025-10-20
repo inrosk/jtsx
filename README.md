@@ -12,7 +12,7 @@
 
 Summary of features:
 
-* Commenting/uncommenting JSX code (including JSX attributes and JS nested in JSX)
+* Commenting/uncommenting `JSX` code (including `JSX` attributes and `JS` nested in `JSX`)
 * Refactoring: moving, wrapping/unwrapping, deleting, renaming `JSX` elements, toggling the orientation of`JSX` attributes
 * Jumping between `JSX` opening and closing tags
 * Electric `JSX` closing tag and new line
