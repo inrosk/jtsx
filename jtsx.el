@@ -306,8 +306,8 @@ that kind of case:
 (defmacro jtsx-with-jsx-attribute-comment-style (&rest body)
   "Execute BODY with jsx attribute comment style."
   (declare (debug t) (indent 0))
-  `(let ((comment-start "/* ")
-         (comment-end " */")
+  `(let ((comment-start "// ")
+         (comment-end "")
          (comment-use-syntax nil)
          (comment-start-skip "\\(?:/\\*+\\)\\s-*")
          (comment-end-skip "\\s-*\\(\\*+/\\)"))
